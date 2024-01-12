@@ -1,16 +1,16 @@
 {
-  "name": "react-native-head-tab-view",
-  "version": "4.0.0-rc.13",
+  "name": "react-native-head-tab-view-flashlist-support",
+  "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "yu zou <zouyu123007@163.com>",
+  "author": "tuan.tran <tranquangtuan0120@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zyslife/react-native-head-tab-view.git"
+    "url": "https://github.com/TranTuan520/react-native-head-tab-view"
   },
-  "homepage": "https://github.com/zyslife/react-native-head-tab-view#readme",
+  "homepage": "https://github.com/TranTuan520/react-native-head-tab-view#readme",
   "license": "ISC",
   "keywords": [
     "react-native-component",
@@ -24,11 +24,12 @@
     "tabview",
     "head",
     "stick",
-    "collapsible-header"
+    "collapsible-header",
+    "FlashList"
   ],
   "peerDependencies": {
     "react-native-gesture-handler": "^1.6.1",
     "react-native-reanimated": "^2.0.1"
   },
-  "description": "Tab view component for React Native"
+  "description": "Tab view component for React Native FlashList support!"
 }
