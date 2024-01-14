@@ -1,34 +1,23 @@
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useRef,
-  useMemo,
-  useState,
-} from 'react';
-import {ScrollableView} from 'react-native-head-tab-view-flashlist-support/types';
-import {Platform, StyleSheet, ScrollViewProps, View} from 'react-native';
-import RefreshControlContainer from 'react-native-head-tab-view-flashlist-support/RefreshControlContainer';
+import React, { memo, useCallback, useEffect, useRef, useMemo } from 'react'
+import { ScrollableView } from './types'
 import {
-  NativeViewGestureHandler,
+  Platform,
+  StyleSheet,
   ScrollView,
-} from 'react-native-gesture-handler';
-import {
-  NormalSceneProps,
-  HPageViewProps,
-} from 'react-native-head-tab-view-flashlist-support/types';
+  ScrollViewProps,
+  View,
+} from 'react-native'
+import RefreshControlContainer from './RefreshControlContainer'
+import { NativeViewGestureHandler } from 'react-native-gesture-handler'
+import { NormalSceneProps, HPageViewProps } from './types'
 import {
   useSceneContext,
   useSharedScrollableRef,
   useSyncInitialPosition,
   useRefreshDerivedValue,
   useVerifyProps,
-} from 'react-native-head-tab-view-flashlist-support/hook';
-import {
-  mScrollTo,
-  animateToRefresh,
-  snapAfterGlideOver,
-} from 'react-native-head-tab-view-flashlist-support/utils';
+} from './hook'
+import { mScrollTo, animateToRefresh, snapAfterGlideOver } from './utils'
 import Animated, {
   runOnJS,
   useDerivedValue,
@@ -40,11 +29,11 @@ import Animated, {
   cancelAnimation,
   interpolate,
   Extrapolate,
-} from 'react-native-reanimated';
-const __IOS = Platform.OS === 'ios';
+} from 'react-native-reanimated'
+const __IOS = Platform.OS === 'ios'
 
-const createCollapsibleFlashList = (Component: ScrollableView<any>) => {
-  const AnimatePageView = Animated.createAnimatedComponent(Component);
+const createCollapsibleFlatList = (Component: ScrollableView<any>) => {
+  const AnimatePageView = Animated.createAnimatedComponent(Component)
   return React.forwardRef((props: any, ref) => {
     return (
       <SceneComponent
@@ -52,9 +41,9 @@ const createCollapsibleFlashList = (Component: ScrollableView<any>) => {
         forwardedRef={ref}
         ContainerView={AnimatePageView}
       />
-    );
-  });
-};
+    )
+  })
+}
 
 const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
   index,
@@ -73,7 +62,7 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
   ...restProps
 }) => {
   if (onScroll !== undefined) {
-    console.warn('Please do not assign onScroll');
+    console.warn('Please do not assign onScroll')
   }
   const {
     shareAnimatedValue = useSharedValue(0),
@@ -93,29 +82,27 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
     scrollingCheckDuration,
     refHasChanged,
     updateSceneInfo,
-  } = useSceneContext();
-
-  const _scrollView = useSharedScrollableRef<ScrollView>(forwardedRef);
-  const panRef = useRef();
-  const scrollY = useSharedValue(0);
-  const realY = useSharedValue(0);
-  const trans = useSharedValue(0);
-  const refreshTrans = useSharedValue(refreshHeight);
-  const isTouchTabsPrev = useSharedValue(false);
-  const isSlidingHeaderPrev = useSharedValue(false);
-  const isRefreshing = useSharedValue(false);
-  const isRefreshingWithAnimation = useSharedValue(false);
-  const isDragging: {value: boolean} = useSharedValue(false);
-  const isLosingMomentum: {value: boolean} = useSharedValue(false);
-  const {opacityValue, syncInitialPosition} =
-    useSyncInitialPosition(_scrollView);
-  const needSnap = useSharedValue(false);
-  const isScrolling = useSharedValue(0);
+  } = useSceneContext()
+  const _scrollView = useSharedScrollableRef<ScrollView>(forwardedRef)
+  const panRef = useRef()
+  const scrollY = useSharedValue(0)
+  const realY = useSharedValue(0)
+  const trans = useSharedValue(0)
+  const refreshTrans = useSharedValue(refreshHeight)
+  const isTouchTabsPrev = useSharedValue(false)
+  const isSlidingHeaderPrev = useSharedValue(false)
+  const isRefreshing = useSharedValue(false)
+  const isRefreshingWithAnimation = useSharedValue(false)
+  const isDragging: { value: boolean } = useSharedValue(false)
+  const isLosingMomentum: { value: boolean } = useSharedValue(false)
+  const { opacityValue, syncInitialPosition } =
+    useSyncInitialPosition(_scrollView)
+  const needSnap = useSharedValue(false)
+  const isScrolling = useSharedValue(0)
   const calcHeight = useMemo(() => {
-    return tabbarHeight + headerHeight;
-  }, [tabbarHeight, headerHeight]);
-  const isInitial = useRef(true);
-  const [stickyHeaderHeight, setStickyHeaderHeight] = useState(0);
+    return tabbarHeight + headerHeight
+  }, [tabbarHeight, headerHeight])
+  const isInitial = useRef(true)
 
   const scrollEnabledValue = useDerivedValue(() => {
     return (
@@ -124,11 +111,11 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
       !isRefreshing.value &&
       !isRefreshingWithAnimation.value &&
       curIndexValue.value === index
-    );
-  });
+    )
+  })
 
   const canSnapFunc = () => {
-    'worklet';
+    'worklet'
     return (
       needSnap.value &&
       !isTouchTabs.value &&
@@ -136,43 +123,43 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
       !isRefreshing.value &&
       !isRefreshingWithAnimation.value &&
       !tabsIsWorking.value
-    );
-  };
+    )
+  }
 
   const refreshValue = useDerivedValue(() => {
     if (isRefreshing.value && isRefreshingWithAnimation.value) {
-      return refreshHeight - refreshTrans.value;
+      return refreshHeight - refreshTrans.value
     }
-    return trans.value - shareAnimatedValue.value;
-  });
+    return trans.value - shareAnimatedValue.value
+  })
 
   useAnimatedReaction(
     () => {
-      return scrollEnabledValue.value;
+      return scrollEnabledValue.value
     },
-    (mScrollEnabled) => {
+    mScrollEnabled => {
       _scrollView &&
         _scrollView.current &&
-        _scrollView.current.setNativeProps({scrollEnabled: mScrollEnabled});
+        _scrollView.current.setNativeProps({ scrollEnabled: mScrollEnabled })
     },
-    [scrollEnabledValue, _scrollView],
-  );
+    [scrollEnabledValue, _scrollView]
+  )
 
   const updateScrollYTrans = useCallback(
     (value: number) => {
-      'worklet';
-      scrollY.value = Math.max(value, 0);
+      'worklet'
+      scrollY.value = Math.max(value, 0)
     },
-    [scrollY],
-  );
+    [scrollY]
+  )
 
   const updateShareValue = useCallback(
     (value: number) => {
-      'worklet';
-      if (curIndexValue.value !== index) return;
+      'worklet'
+      if (curIndexValue.value !== index) return
       //Avoid causing updates to the ShareAnimatedValue after the drop-down has finished
-      if (isRefreshing.value !== isRefreshingWithAnimation.value) return;
-      shareAnimatedValue.value = value;
+      if (isRefreshing.value !== isRefreshingWithAnimation.value) return
+      shareAnimatedValue.value = value
     },
     [
       curIndexValue.value,
@@ -180,30 +167,30 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
       index,
       isRefreshing.value,
       isRefreshingWithAnimation.value,
-    ],
-  );
+    ]
+  )
 
   const tryToSnap = useCallback(() => {
-    'worklet';
-    if (!enableSnap) return;
-    cancelAnimation(isScrolling);
+    'worklet'
+    if (!enableSnap) return
+    cancelAnimation(isScrolling)
     if (canSnapFunc()) {
-      isScrolling.value = 1;
+      isScrolling.value = 1
       isScrolling.value = withTiming(
         0,
-        {duration: scrollingCheckDuration},
-        (isFinished) => {
+        { duration: scrollingCheckDuration },
+        isFinished => {
           if (isFinished && canSnapFunc()) {
-            needSnap.value = false;
+            needSnap.value = false
             snapAfterGlideOver({
               sceneRef: _scrollView,
               shareAnimatedValue,
               headerHeight,
               frozeTop,
-            });
+            })
           }
-        },
-      );
+        }
+      )
     }
   }, [
     isScrolling.value,
@@ -214,28 +201,28 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
     frozeTop,
     enableSnap,
     scrollingCheckDuration,
-  ]);
+  ])
 
   const onScrollAnimateEvent = useAnimatedScrollHandler(
     {
       onScroll: (event, ctx) => {
-        realY.value = event.contentOffset.y;
-        let moveY = Math.max(event.contentOffset.y, 0);
+        realY.value = event.contentOffset.y
+        let moveY = Math.max(event.contentOffset.y, 0)
 
-        if (isRefreshingWithAnimation.value || isRefreshing.value) return;
-        tryToSnap();
+        if (isRefreshingWithAnimation.value || isRefreshing.value) return
+        tryToSnap()
         moveY =
           isRefreshing.value && isRefreshingWithAnimation.value
             ? moveY + refreshHeight
-            : moveY;
-        updateScrollYTrans(moveY);
-        updateShareValue(moveY);
+            : moveY
+        updateScrollYTrans(moveY)
+        updateShareValue(moveY)
       },
       onMomentumBegin: () => {
-        isLosingMomentum.value = true;
+        isLosingMomentum.value = true
       },
       onMomentumEnd: () => {
-        isLosingMomentum.value = false;
+        isLosingMomentum.value = false
       },
     },
     [
@@ -244,8 +231,8 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
       updateScrollYTrans,
       isRefreshingWithAnimation,
       tryToSnap,
-    ],
-  );
+    ]
+  )
 
   const onRefreshStatusCallback = React.useCallback(
     (isToRefresh: boolean) => {
@@ -257,27 +244,27 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
           destPoi: shareAnimatedValue.value,
           isToRefresh: true,
           onStartRefresh,
-        });
+        })
       } else {
         const destPoi =
           shareAnimatedValue.value > headerHeight + refreshHeight
             ? shareAnimatedValue.value
-            : shareAnimatedValue.value + refreshHeight;
+            : shareAnimatedValue.value + refreshHeight
         animateToRefresh({
           transRefreshing: refreshTrans,
           isRefreshing,
           isRefreshingWithAnimation,
           destPoi,
           isToRefresh: false,
-        });
+        })
       }
     },
-    [onStartRefresh, refreshHeight, headerHeight],
-  );
+    [onStartRefresh, refreshHeight, headerHeight]
+  )
 
   useEffect(() => {
-    refHasChanged && refHasChanged(panRef);
-  }, [refHasChanged, panRef]);
+    refHasChanged && refHasChanged(panRef)
+  }, [refHasChanged, panRef])
 
   useEffect(() => {
     if (_scrollView && _scrollView.current) {
@@ -293,7 +280,7 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
         scrollEnabledValue,
         isLosingMomentum,
         onRefreshStatusCallback,
-      });
+      })
     }
   }, [
     _scrollView,
@@ -305,20 +292,20 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
     scrollY,
     isDragging,
     onRefreshStatusCallback,
-  ]);
+  ])
 
   //adjust the scene size
   const _onContentSizeChange = useCallback(
     (contentWidth: number, contentHeight: number) => {
-      onContentSizeChange && onContentSizeChange(contentWidth, contentHeight);
+      onContentSizeChange && onContentSizeChange(contentWidth, contentHeight)
 
       //Some mobile phones measure less than their actual height. And the difference in height is not more than a pixel
       if (Math.ceil(contentHeight) >= expectHeight) {
         syncInitialPosition(
           isRefreshing.value
             ? shareAnimatedValue.value - refreshHeight
-            : shareAnimatedValue.value,
-        );
+            : shareAnimatedValue.value
+        )
       }
     },
     [
@@ -328,61 +315,61 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
       isRefreshing,
       refreshTrans,
       shareAnimatedValue,
-    ],
-  );
+    ]
+  )
 
   //Pull-refresh
   useEffect(() => {
     if (_isRefreshing) {
-      onRefreshStatusCallback(true);
+      onRefreshStatusCallback(true)
     } else {
-      if (isInitial.current) return;
-      onRefreshStatusCallback(false);
+      if (isInitial.current) return
+      onRefreshStatusCallback(false)
     }
-    isInitial.current = false;
-  }, [_isRefreshing, onRefreshStatusCallback, isInitial]);
+    isInitial.current = false
+  }, [_isRefreshing, onRefreshStatusCallback, isInitial])
 
   //Finger off the screen
   useAnimatedReaction(
     () => {
-      return isTouchTabs.value !== isTouchTabsPrev.value && enableSnap;
+      return isTouchTabs.value !== isTouchTabsPrev.value && enableSnap
     },
-    (result) => {
-      if (!result) return;
-      isTouchTabsPrev.value = isTouchTabs.value;
-      if (isTouchTabs.value === true) return;
+    result => {
+      if (!result) return
+      isTouchTabsPrev.value = isTouchTabs.value
+      if (isTouchTabs.value === true) return
 
-      needSnap.value = true;
-      tryToSnap();
+      needSnap.value = true
+      tryToSnap()
     },
-    [isTouchTabs, isTouchTabsPrev, tryToSnap, enableSnap],
-  );
+    [isTouchTabs, isTouchTabsPrev, tryToSnap, enableSnap]
+  )
 
   //Slide header over
   useAnimatedReaction(
     () => {
-      return isSlidingHeader.value !== isSlidingHeaderPrev.value && enableSnap;
+      return isSlidingHeader.value !== isSlidingHeaderPrev.value && enableSnap
     },
-    (result) => {
-      if (!result) return;
-      isSlidingHeaderPrev.value = isSlidingHeader.value;
-      if (isSlidingHeader.value === true) return;
+    result => {
+      if (!result) return
+      isSlidingHeaderPrev.value = isSlidingHeader.value
+      if (isSlidingHeader.value === true) return
 
-      needSnap.value = true;
-      tryToSnap();
+      needSnap.value = true
+      tryToSnap()
     },
-    [isSlidingHeader, isSlidingHeaderPrev, tryToSnap, enableSnap],
-  );
+    [isSlidingHeader, isSlidingHeaderPrev, tryToSnap, enableSnap]
+  )
 
   useAnimatedReaction(
     () => {
-      return refreshTrans.value;
+      return refreshTrans.value
     },
-    (mTrans) => {
-      trans.value = Math.max(refreshHeight - mTrans, 0);
+    mTrans => {
+      trans.value = Math.max(refreshHeight - mTrans, 0)
     },
-    [refreshTrans, refreshHeight],
-  );
+    [refreshTrans, refreshHeight]
+  )
 
   useAnimatedReaction(
     () => {
@@ -390,31 +377,31 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
         isRefreshing.value === false &&
         isRefreshingWithAnimation.value === true &&
         refreshTrans
-      );
+      )
     },
-    (isStart) => {
-      if (!isStart) return;
-      if (realY.value === refreshTrans.value - refreshHeight) return;
-      mScrollTo(_scrollView, 0, refreshTrans.value - refreshHeight, false);
+    isStart => {
+      if (!isStart) return
+      if (realY.value === refreshTrans.value - refreshHeight) return
+      mScrollTo(_scrollView, 0, refreshTrans.value - refreshHeight, false)
     },
-    [isRefreshing, isRefreshingWithAnimation, refreshTrans, refreshHeight],
-  );
+    [isRefreshing, isRefreshingWithAnimation, refreshTrans, refreshHeight]
+  )
 
   useAnimatedReaction(
     () => {
       return (
         refreshTrans.value <= refreshHeight &&
         (isDragging.value || isRefreshingWithAnimation.value)
-      );
+      )
     },
-    (isStart) => {
-      if (!isStart) return;
+    isStart => {
+      if (!isStart) return
       if (realY.value !== 0) {
-        mScrollTo(_scrollView, 0, 0, false);
+        mScrollTo(_scrollView, 0, 0, false)
       }
     },
-    [refreshTrans, refreshHeight, isDragging, isRefreshingWithAnimation],
-  );
+    [refreshTrans, refreshHeight, isDragging, isRefreshingWithAnimation]
+  )
 
   useAnimatedReaction(
     () => {
@@ -422,12 +409,12 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
         refreshTrans.value >= 0 &&
         isRefreshingWithAnimation.value &&
         isRefreshing.value
-      );
+      )
     },
-    (isStart) => {
-      if (!isStart) return;
-      updateScrollYTrans(refreshTrans.value);
-      updateShareValue(refreshTrans.value);
+    isStart => {
+      if (!isStart) return
+      updateScrollYTrans(refreshTrans.value)
+      updateShareValue(refreshTrans.value)
     },
     [
       refreshTrans,
@@ -437,8 +424,8 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
       _scrollView,
       updateShareValue,
       updateScrollYTrans,
-    ],
-  );
+    ]
+  )
 
   useAnimatedReaction(
     () => {
@@ -446,12 +433,12 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
         refreshTrans.value > refreshHeight &&
         isRefreshing.value &&
         isRefreshingWithAnimation.value
-      );
+      )
     },
-    (start) => {
-      if (!start) return;
+    start => {
+      if (!start) return
       if (realY.value !== refreshTrans.value - refreshHeight) {
-        mScrollTo(_scrollView, 0, refreshTrans.value - refreshHeight, false);
+        mScrollTo(_scrollView, 0, refreshTrans.value - refreshHeight, false)
       }
     },
     [
@@ -460,30 +447,15 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
       isRefreshing,
       isRefreshingWithAnimation,
       _scrollView,
-    ],
-  );
+    ]
+  )
 
   const translateY = useRefreshDerivedValue({
     animatedValue: trans,
     refreshHeight,
     overflowPull,
     pullExtendedCoefficient,
-  });
-
-  const stickyHeaderAnimatedStyles = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateY: interpolate(
-            realY.value,
-            [0, calcHeight - tabbarHeight],
-            [calcHeight, tabbarHeight],
-            Extrapolate.CLAMP,
-          ),
-        },
-      ],
-    };
-  });
+  })
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -492,11 +464,11 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
           translateY: translateY.value,
         },
       ],
-    };
-  });
+    }
+  })
 
   const renderRefreshControl = () => {
-    if (!onStartRefresh) return;
+    if (!onStartRefresh) return
     return (
       <RefreshControlContainer
         top={calcHeight}
@@ -509,33 +481,28 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
         pullExtendedCoefficient={pullExtendedCoefficient}
         renderContent={_renderRefreshControl}
       />
-    );
-  };
+    )
+  }
 
   const bouncesEnabled = useMemo(() => {
-    return __IOS && !tabsRefreshEnabled && onStartRefresh === undefined;
-  }, [tabsRefreshEnabled, onStartRefresh]);
+    return __IOS && !tabsRefreshEnabled && onStartRefresh === undefined
+  }, [tabsRefreshEnabled, onStartRefresh])
 
   const sceneStyle = useAnimatedStyle(() => {
     return {
       opacity: opacityValue.value,
-    };
-  });
+    }
+  })
 
   return (
-    <Animated.View style={[styles.container, {}]}>
+    <Animated.View style={[styles.container]}>
       {opacityValue.value !== 1 && renderLoadingView ? (
         <Animated.View style={StyleSheet.absoluteFill}>
           {renderLoadingView(headerHeight)}
         </Animated.View>
       ) : null}
       <Animated.View style={[styles.container, sceneStyle]}>
-        <Animated.View
-          style={[
-            styles.container,
-            animatedStyle,
-            {flex: 1, height: expectHeight},
-          ]}>
+        <Animated.View style={[styles.container, animatedStyle]}>
           <MemoList
             panRef={panRef}
             ContainerView={ContainerView}
@@ -545,36 +512,26 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
             bounces={bouncesEnabled}
             headerHeight={calcHeight}
             expectHeight={expectHeight}
-            stickyHeaderHeight={stickyHeaderHeight}
+            realY={realY}
+            calcHeight={calcHeight}
+            tabbarHeight={tabbarHeight}
+            StickyHeaderComponent={StickyHeaderComponent}
             {...restProps}
           />
-          <Animated.View
-            onLayout={(event) => {
-              const height = event.nativeEvent.layout.height;
-
-              if (height) {
-                setStickyHeaderHeight(height);
-              }
-            }}
-            style={[
-              {position: 'absolute', width: '100%'},
-              stickyHeaderAnimatedStyles,
-            ]}>
-            {StickyHeaderComponent && <StickyHeaderComponent />}
-          </Animated.View>
         </Animated.View>
         {renderRefreshControl()}
       </Animated.View>
     </Animated.View>
-  );
-};
+  )
+}
 
 interface SceneListComponentProps {
-  panRef: any;
-  ContainerView: any;
-  zForwardedRef: any;
-  headerHeight: number;
-  expectHeight: number;
+  panRef: any
+  ContainerView: any
+  zForwardedRef: any
+  headerHeight: number
+  expectHeight: number
+  stickyHeaderHeight: number
 }
 
 const SceneListComponent: React.FC<
@@ -589,8 +546,10 @@ const SceneListComponent: React.FC<
   directionalLockEnabled,
   contentContainerStyle,
   scrollIndicatorInsets,
-  stickyHeaderHeight,
-  maintainVisibleContentPosition,
+  realY,
+  calcHeight,
+  tabbarHeight,
+  StickyHeaderComponent,
   ...rest
 }) => {
   const {
@@ -601,8 +560,42 @@ const SceneListComponent: React.FC<
     directionalLockEnabled,
     contentContainerStyle,
     scrollIndicatorInsets,
-    maintainVisibleContentPosition,
-  });
+  })
+
+  const stickyHeaderAnimatedStyles = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateY: interpolate(
+            realY.value,
+            [headerHeight - tabbarHeight, headerHeight],
+            [0, tabbarHeight],
+            Extrapolate.CLAMP
+          ),
+        },
+      ],
+    }
+  })
+
+  const renderListHeaderComponent = useMemo(() => {
+    const { ListHeaderComponent, withStickyHeader } = rest
+    if (ListHeaderComponent) {
+      return withStickyHeader ? (
+        <Animated.View
+          style={[
+            {
+              width: '100%',
+            },
+            stickyHeaderAnimatedStyles,
+          ]}>
+          <ListHeaderComponent />
+        </Animated.View>
+      ) : (
+        <ListHeaderComponent />
+      )
+    }
+    return <></>
+  }, [])
 
   return (
     <NativeViewGestureHandler ref={panRef}>
@@ -611,39 +604,34 @@ const SceneListComponent: React.FC<
         scrollEventThrottle={16}
         directionalLockEnabled
         contentContainerStyle={[
-          {paddingTop: headerHeight, minHeight: expectHeight},
+          {
+            paddingTop: headerHeight,
+            minHeight: expectHeight,
+          },
           _contentContainerStyle,
         ]}
-        scrollIndicatorInsets={{top: headerHeight, ..._scrollIndicatorInsets}}
-        {...rest}
-        renderScrollComponent={ScrollView}
-        maintainVisibleContentPosition={null}
-        ListHeaderComponent={() => {
-          return (
-            <View>
-              <View
-                style={[
-                  {
-                    height: headerHeight + stickyHeaderHeight ?? 0,
-                    justifyContent: 'flex-end',
-                  },
-                ]}
-              />
-              {rest?.ListHeaderComponent && rest?.ListHeaderComponent}
-            </View>
-          );
+        scrollIndicatorInsets={{
+          top: headerHeight,
+          ..._scrollIndicatorInsets,
         }}
+        {...rest}
+        ListHeaderComponent={renderListHeaderComponent}
+        {...(rest.withStickyHeader
+          ? {
+              stickyHeaderIndices: [0],
+            }
+          : {})}
       />
     </NativeViewGestureHandler>
-  );
-};
+  )
+}
 
-const MemoList = memo(SceneListComponent);
+const MemoList = memo(SceneListComponent)
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-});
+})
 
-export default createCollapsibleFlashList;
+export default createCollapsibleFlatList
