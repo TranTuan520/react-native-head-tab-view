@@ -93,6 +93,7 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
     scrollingCheckDuration,
     refHasChanged,
     updateSceneInfo,
+    floatingButtonHeight,
   } = useSceneContext();
 
   const _scrollView = useSharedScrollableRef<ScrollView>(forwardedRef);
@@ -546,6 +547,7 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
             headerHeight={calcHeight}
             expectHeight={expectHeight}
             stickyHeaderHeight={stickyHeaderHeight}
+            floatingButtonHeight={floatingButtonHeight}
             {...restProps}
           />
           <Animated.View
@@ -591,6 +593,7 @@ const SceneListComponent: React.FC<
   scrollIndicatorInsets,
   stickyHeaderHeight,
   maintainVisibleContentPosition,
+  floatingButtonHeight,
   ...rest
 }) => {
   const {
@@ -603,6 +606,8 @@ const SceneListComponent: React.FC<
     scrollIndicatorInsets,
     maintainVisibleContentPosition,
   });
+
+  const ListFooterComponent = rest.ListFooterComponent;
 
   return (
     <NativeViewGestureHandler ref={panRef}>
@@ -631,6 +636,14 @@ const SceneListComponent: React.FC<
               />
               {rest?.ListHeaderComponent && rest?.ListHeaderComponent}
             </View>
+          );
+        }}
+        ListFooterComponent={() => {
+          return (
+            <>
+              {ListFooterComponent && <ListFooterComponent />}
+              <View style={{height: floatingButtonHeight ?? 0}} />
+            </>
           );
         }}
       />
