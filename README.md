@@ -1,23 +1,16 @@
 # React Native Head Tab View
 
-:tada::tada::tada: v4.0.0-rc.13 has been released, I hope you can help me test and collect questions.
-In this version, there is a big change. All animations will run on the UI thread, which will make the components much smoother. Unfortunately, the version requiring React Native is greater than 0.62.0. Because we rely on `react-native-reanimated2.0`, that's what it requires.  
+A package forked from [zyslife/react-native-head-tab-view](https://github.com/zyslife/react-native-head-tab-view), which supports Shopify's FlashLish and a few little things that I think will help you 😗
 
-Here are some changes and optimizations.
-**Disruptive Changes**:  
+```tsx
+# in .../node_modules/react-native-tab-view-collapsible-header( We will do this for you in the next version):
 
-- Remove `makeHeaderHeight` and change it to `headerHeight`
+# replace:
+import { GestureContainer, CollapsibleHeaderProps, GestureContainerRef } from 'react-native-head-tab-view'
 
-> It's not mandatory, but it would be nice if you did  
-
-- Removed `SlideAnimated` mode
-
-> this mode was used for ScrollView/FlatList scrolling stalling when dragging headers, no longer needed.
->
-> - Remove the scene's `refreshHeight` property  
->   Both the TabView and Scene used to have the refreshHeight property. Now I think they are duplicate, just set refreshHeight on the TabView, its default value is 80
-
-- The usage of `HPageViewHoc` has changed
+# to:
+import { GestureContainer, CollapsibleHeaderProps, GestureContainerRef } from 'react-native-head-tab-view-flashlist-support'
+```
 
 ```tsx
 # Past usage:
@@ -25,8 +18,8 @@ import { HPageViewHoc } from 'react-native-head-tab-view'
 const HScrollView = HPageViewHoc(ScrollView)
 const HFlatList = HPageViewHoc(FlatList)
 const HSectionList = HPageViewHoc(SectionList)
-# Current usage
-import { HScrollView,HFlatList,HSectionList } from 'react-native-head-tab-view'
+...
+# Current usageimport { HScrollView,HFlatList,HSectionList, HFlashList } from 'react-native-head-tab-view-flashlist-support'
 ```
 
 
@@ -36,51 +29,6 @@ import { HScrollView,HFlatList,HSectionList } from 'react-native-head-tab-view'
 [react-native-tab-view](https://github.com/satya164/react-native-tab-view)   
 
 For detailed usage, please refer to [Example](https://github.com/zyslife/react-native-head-tab-view#Example) and [Installation](https://github.com/zyslife/react-native-head-tab-view#Installation).
-
-## Features  
-
-#### v4.0.0-rc  
-
-- **Fix for TAB slider stuttering when dragging headers**
-- **Optimized pull-down refresh for easier expansion and better performance** 
-- **When switching tabbars, the scene is no longer re-rendered**
-- **`renderScrollHeader` can accept ReactElement.**
-- **Add `enableSnap` to props.** (*If it is true,it automatically switches to the folded and expanded states.)*
-
-#### dependencies:
-
->1.react-native-gesture-handler  
->2.react-native-reanimated
-
-
-###### v3.0
-
-- Support for extension of other Tabs components, support for shared collapsible headers
-- The built-in tabs component is discarded
-
->#### dependencies:
->
->1.react-native-gesture-handler  
-
-###### v2.0
-
-- Add a pull-down refresh for the Tab page（v2.0~）
-- Add a pull-down refresh for the Tabview（v2.0.6~）
-- Add the new slide mode to Collapsible Headers and Tabview（v2.1.0~）
-
-###### v1.0
-
-- Built-in Scrollable tabs
-- All Tab pages share collapsible headers
-- Collapsible Headers controls the slide of the Tabview in the vertical direction
-- Collapsible Headers can respond to an event 
-
->#### dependencies:
->
->1.react-native-gesture-handler  
->2.@react-native-community/viewpager
-
-
 
 
 ## Demo
