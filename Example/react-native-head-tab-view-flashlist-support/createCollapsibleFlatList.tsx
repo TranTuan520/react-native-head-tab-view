@@ -1,4 +1,11 @@
-import React, {memo, useCallback, useEffect, useRef, useMemo} from 'react';
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  useMemo,
+  useState,
+} from 'react';
 import {ScrollableView} from './types';
 import {
   Platform,
@@ -534,6 +541,9 @@ interface SceneListComponentProps {
   headerHeight: number;
   expectHeight: number;
   stickyHeaderHeight: number;
+  loadingDelayDuration: number;
+  loadingVisible: boolean;
+  LoadingComponent: any;
 }
 
 const SceneListComponent: React.FC<
@@ -553,6 +563,10 @@ const SceneListComponent: React.FC<
   tabbarHeight,
   StickyHeaderComponent,
   floatingButtonHeight,
+  loadingVisible,
+  LoadingComponent,
+  data,
+  loadingDelayDuration,
   ...rest
 }) => {
   const {
@@ -564,6 +578,31 @@ const SceneListComponent: React.FC<
     contentContainerStyle,
     scrollIndicatorInsets,
   });
+
+  const [isLoading, setIsLoading] = useState(loadingVisible);
+
+  const loadingTimeout = useRef<any>(null);
+
+  const clearLoadingTimeout = () => {
+    clearTimeout(loadingTimeout.current);
+    loadingTimeout.current = null;
+  };
+
+  useEffect(() => {
+    if (loadingVisible) {
+      setIsLoading(true);
+    } else {
+      clearLoadingTimeout();
+
+      loadingTimeout.current = setTimeout(() => {
+        setIsLoading(false);
+      }, loadingDelayDuration ?? 400);
+    }
+
+    return () => {
+      clearLoadingTimeout();
+    };
+  }, [loadingVisible]);
 
   const stickyHeaderAnimatedStyles = useAnimatedStyle(() => {
     return {
@@ -602,10 +641,13 @@ const SceneListComponent: React.FC<
 
   const ListFooterComponent = rest.ListFooterComponent;
 
+  const listData = useMemo(() => (isLoading ? [] : data), [data, isLoading]);
+
   return (
     <NativeViewGestureHandler ref={panRef}>
       <ContainerView
         ref={zForwardedRef}
+        data={listData}
         scrollEventThrottle={16}
         directionalLockEnabled
         contentContainerStyle={[
@@ -634,6 +676,9 @@ const SceneListComponent: React.FC<
             </>
           );
         }}
+        {...(isLoading && LoadingComponent
+          ? {ListEmptyComponent: LoadingComponent}
+          : {})}
       />
     </NativeViewGestureHandler>
   );

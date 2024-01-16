@@ -56,6 +56,9 @@ export interface NormalSceneProps
     NormalSceneBaseProps {
   ContainerView: any;
   forwardedRef: any;
+  loadingDelayDuration: number;
+  loadingVisible: boolean;
+  LoadingComponent: any;
 }
 
 export interface HPageViewProps {
