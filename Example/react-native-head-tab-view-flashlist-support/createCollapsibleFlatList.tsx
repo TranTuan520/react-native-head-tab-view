@@ -598,7 +598,7 @@ const SceneListComponent: React.FC<
       );
     }
     return <></>;
-  }, []);
+  }, [rest?.ListHeaderComponent]);
 
   const ListFooterComponent = rest.ListFooterComponent;
 
