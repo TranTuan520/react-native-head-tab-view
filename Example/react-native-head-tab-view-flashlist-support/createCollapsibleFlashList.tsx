@@ -548,6 +548,8 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
             expectHeight={expectHeight}
             stickyHeaderHeight={stickyHeaderHeight}
             floatingButtonHeight={floatingButtonHeight}
+            calcHeight={calcHeight}
+            tabbarHeight={tabbarHeight}
             {...restProps}
           />
           <Animated.View
@@ -594,6 +596,8 @@ const SceneListComponent: React.FC<
   stickyHeaderHeight,
   maintainVisibleContentPosition,
   floatingButtonHeight,
+  tabbarHeight,
+  calcHeight,
   ...rest
 }) => {
   const {
@@ -607,20 +611,69 @@ const SceneListComponent: React.FC<
     maintainVisibleContentPosition,
   });
 
+  const {data} = rest;
+
+  const [contentHeight, setContentHeight] = useState(0);
+
+  const [itemHeight, setItemHeight] = useState(0);
+
+  const isFirstMount = useRef(true);
+
+  const renderItem = (props) => {
+    return (
+      <View
+        onLayout={(event) => {
+          if (isFirstMount.current) {
+            const height = event.nativeEvent.layout.height;
+
+            if (height) {
+              isFirstMount.current = false;
+
+              setItemHeight(height);
+            }
+          }
+        }}>
+        {rest.renderItem(props)}
+      </View>
+    );
+  };
+
+  // Todo: Improve after
+  const tempHeight = useMemo(() => {
+    let height = 0;
+
+    if (
+      data?.length &&
+      itemHeight * data.length <
+        contentHeight - tabbarHeight - stickyHeaderHeight
+    ) {
+      height =
+        contentHeight -
+        tabbarHeight -
+        stickyHeaderHeight -
+        itemHeight * data.length;
+    }
+
+    return height;
+  }, [contentHeight, itemHeight, data, tabbarHeight, stickyHeaderHeight]);
+
   const ListFooterComponent = rest.ListFooterComponent;
+
+  const ListEmptyComponent = rest.ListEmptyComponent;
 
   return (
     <NativeViewGestureHandler ref={panRef}>
       <ContainerView
+        {...rest}
         ref={zForwardedRef}
         scrollEventThrottle={16}
         directionalLockEnabled
-        contentContainerStyle={[
-          {paddingTop: headerHeight, minHeight: expectHeight},
-          _contentContainerStyle,
-        ]}
-        scrollIndicatorInsets={{top: headerHeight, ..._scrollIndicatorInsets}}
-        {...rest}
+        renderItem={renderItem}
+        contentContainerStyle={[_contentContainerStyle]}
+        scrollIndicatorInsets={{
+          top: headerHeight,
+          ..._scrollIndicatorInsets,
+        }}
         renderScrollComponent={ScrollView}
         maintainVisibleContentPosition={null}
         ListHeaderComponent={() => {
@@ -638,13 +691,40 @@ const SceneListComponent: React.FC<
             </View>
           );
         }}
+        ListEmptyComponent={() => {
+          return (
+            <View
+              style={{
+                height: contentHeight - tabbarHeight,
+                width: '100%',
+              }}>
+              {ListEmptyComponent && <ListEmptyComponent />}
+            </View>
+          );
+        }}
         ListFooterComponent={() => {
           return (
             <>
               {ListFooterComponent && <ListFooterComponent />}
-              <View style={{height: floatingButtonHeight ?? 0}} />
+
+              <View
+                style={{
+                  height: data?.length
+                    ? tempHeight
+                      ? tempHeight
+                      : floatingButtonHeight ?? 0
+                    : 0,
+                }}
+              />
             </>
           );
+        }}
+        onLayout={(event) => {
+          const height = event.nativeEvent.layout.height;
+
+          if (height) {
+            setContentHeight(height);
+          }
         }}
       />
     </NativeViewGestureHandler>
