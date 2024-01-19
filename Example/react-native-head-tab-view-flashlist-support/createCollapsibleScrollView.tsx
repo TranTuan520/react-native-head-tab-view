@@ -1,4 +1,11 @@
-import React, {memo, useCallback, useEffect, useRef, useMemo} from 'react';
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  useMemo,
+  useState,
+} from 'react';
 import {ScrollableView} from './types';
 import {
   Platform,
@@ -27,8 +34,18 @@ import Animated, {
   useAnimatedReaction,
   withTiming,
   cancelAnimation,
+  interpolate,
+  Extrapolate,
 } from 'react-native-reanimated';
 const __IOS = Platform.OS === 'ios';
+
+import {LogBox} from 'react-native';
+
+LogBox.ignoreLogs(['Warning: ...']); //Hide warnings
+
+LogBox.ignoreAllLogs(); //Hide all warning notifications on front-end
+
+console.error = (error) => error.apply;
 
 const createCollapsibleScrollView = (Component: ScrollableView<any>) => {
   const AnimatePageView = Animated.createAnimatedComponent(Component);
@@ -56,6 +73,7 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
   ContainerView,
   isRefreshing: _isRefreshing = false,
   renderRefreshControl: _renderRefreshControl,
+  ListHeaderStickyComponent,
   ...restProps
 }) => {
   if (onScroll !== undefined) {
@@ -511,6 +529,10 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
             headerHeight={calcHeight}
             expectHeight={expectHeight}
             floatingButtonHeight={floatingButtonHeight}
+            ListHeaderStickyComponent={ListHeaderStickyComponent}
+            realY={realY}
+            calcHeight={calcHeight}
+            tabbarHeight={tabbarHeight}
             {...restProps}
           />
         </Animated.View>
@@ -541,6 +563,10 @@ const SceneListComponent: React.FC<
   contentContainerStyle,
   scrollIndicatorInsets,
   floatingButtonHeight,
+  ListHeaderStickyComponent,
+  realY,
+  calcHeight,
+  tabbarHeight,
   ...rest
 }) => {
   const {
@@ -553,18 +579,44 @@ const SceneListComponent: React.FC<
     scrollIndicatorInsets,
   });
 
+  const stickyHeaderAnimatedStyles = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateY: interpolate(
+            realY.value,
+            [headerHeight, headerHeight - tabbarHeight],
+            [tabbarHeight, 0],
+            Extrapolate.CLAMP,
+          ),
+        },
+      ],
+    };
+  });
+
   return (
     <NativeViewGestureHandler ref={panRef}>
       <ContainerView
         ref={zForwardedRef}
         scrollEventThrottle={16}
         directionalLockEnabled
+        stickyHeaderIndices={[0]}
         contentContainerStyle={[
-          {paddingTop: headerHeight, minHeight: expectHeight},
+          {
+            paddingTop: headerHeight,
+            minHeight: expectHeight,
+          },
           _contentContainerStyle,
         ]}
         scrollIndicatorInsets={{top: headerHeight, ..._scrollIndicatorInsets}}
         {...rest}>
+        <>
+          {ListHeaderStickyComponent && (
+            <Animated.View style={stickyHeaderAnimatedStyles}>
+              <ListHeaderStickyComponent />
+            </Animated.View>
+          )}
+        </>
         {rest.children}
         <View style={{height: floatingButtonHeight ?? 0}} />
       </ContainerView>
