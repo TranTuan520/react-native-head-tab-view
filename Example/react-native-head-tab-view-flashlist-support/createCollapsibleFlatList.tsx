@@ -620,9 +620,10 @@ const SceneListComponent: React.FC<
   });
 
   const renderListHeaderComponent = useMemo(() => {
-    const {ListHeaderComponent, withStickyHeader} = rest;
-    if (ListHeaderComponent) {
-      return withStickyHeader ? (
+    const {ListHeaderComponent} = rest;
+
+    if (StickyHeaderComponent) {
+      return (
         <Animated.View
           style={[
             {
@@ -630,14 +631,13 @@ const SceneListComponent: React.FC<
             },
             stickyHeaderAnimatedStyles,
           ]}>
-          <ListHeaderComponent />
+          <StickyHeaderComponent />
         </Animated.View>
-      ) : (
-        <ListHeaderComponent />
       );
     }
-    return <></>;
-  }, [rest?.ListHeaderComponent]);
+
+    return ListHeaderComponent ? <ListHeaderComponent /> : <></>;
+  }, [rest?.ListHeaderComponent, StickyHeaderComponent]);
 
   const ListFooterComponent = rest.ListFooterComponent;
 
@@ -663,7 +663,7 @@ const SceneListComponent: React.FC<
         }}
         {...rest}
         ListHeaderComponent={renderListHeaderComponent}
-        {...(rest.withStickyHeader
+        {...(StickyHeaderComponent
           ? {
               stickyHeaderIndices: [0],
             }

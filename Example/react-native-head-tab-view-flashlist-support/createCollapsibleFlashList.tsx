@@ -678,7 +678,7 @@ const SceneListComponent: React.FC<
         maintainVisibleContentPosition={null}
         ListHeaderComponent={() => {
           return (
-            <View>
+            <>
               <View
                 style={[
                   {
@@ -688,7 +688,7 @@ const SceneListComponent: React.FC<
                 ]}
               />
               {rest?.ListHeaderComponent && rest?.ListHeaderComponent}
-            </View>
+            </>
           );
         }}
         ListEmptyComponent={() => {

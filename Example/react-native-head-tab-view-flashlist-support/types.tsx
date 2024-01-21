@@ -42,7 +42,7 @@ export interface IGestureContainerProps extends CollapsibleHeaderProps {
   renderTabView: any;
   forwardedRef: any;
   renderFooterComponent: any;
-  withFloatingButton: Boolean;
+  FloatingButtonComponent: any;
 }
 
 export interface RefreshControlProps {
@@ -59,6 +59,8 @@ export interface NormalSceneProps
   loadingDelayDuration: number;
   loadingVisible: boolean;
   LoadingComponent: any;
+  StickyHeaderComponent: any;
+  FloatingButtonComponent: any;
 }
 
 export interface HPageViewProps {

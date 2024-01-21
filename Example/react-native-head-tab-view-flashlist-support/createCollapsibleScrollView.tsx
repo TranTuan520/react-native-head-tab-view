@@ -39,14 +39,6 @@ import Animated, {
 } from 'react-native-reanimated';
 const __IOS = Platform.OS === 'ios';
 
-import {LogBox} from 'react-native';
-
-LogBox.ignoreLogs(['Warning: ...']); //Hide warnings
-
-LogBox.ignoreAllLogs(); //Hide all warning notifications on front-end
-
-console.error = (error) => error.apply;
-
 const createCollapsibleScrollView = (Component: ScrollableView<any>) => {
   const AnimatePageView = Animated.createAnimatedComponent(Component);
   return React.forwardRef((props: any, ref) => {
@@ -73,7 +65,7 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
   ContainerView,
   isRefreshing: _isRefreshing = false,
   renderRefreshControl: _renderRefreshControl,
-  ListHeaderStickyComponent,
+  StickyHeaderComponent,
   ...restProps
 }) => {
   if (onScroll !== undefined) {
@@ -529,7 +521,7 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
             headerHeight={calcHeight}
             expectHeight={expectHeight}
             floatingButtonHeight={floatingButtonHeight}
-            ListHeaderStickyComponent={ListHeaderStickyComponent}
+            StickyHeaderComponent={StickyHeaderComponent}
             realY={realY}
             calcHeight={calcHeight}
             tabbarHeight={tabbarHeight}
@@ -563,7 +555,7 @@ const SceneListComponent: React.FC<
   contentContainerStyle,
   scrollIndicatorInsets,
   floatingButtonHeight,
-  ListHeaderStickyComponent,
+  StickyHeaderComponent,
   realY,
   calcHeight,
   tabbarHeight,
@@ -611,9 +603,9 @@ const SceneListComponent: React.FC<
         scrollIndicatorInsets={{top: headerHeight, ..._scrollIndicatorInsets}}
         {...rest}>
         <>
-          {ListHeaderStickyComponent && (
+          {StickyHeaderComponent && (
             <Animated.View style={stickyHeaderAnimatedStyles}>
-              <ListHeaderStickyComponent />
+              <StickyHeaderComponent />
             </Animated.View>
           )}
         </>
