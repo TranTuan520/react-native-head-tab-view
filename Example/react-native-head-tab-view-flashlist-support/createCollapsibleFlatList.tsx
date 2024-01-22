@@ -13,6 +13,7 @@ import {
   ScrollView,
   ScrollViewProps,
   View,
+  DeviceEventEmitter,
 } from 'react-native';
 import RefreshControlContainer from './RefreshControlContainer';
 import {NativeViewGestureHandler} from 'react-native-gesture-handler';
@@ -36,7 +37,9 @@ import Animated, {
   cancelAnimation,
   interpolate,
   Extrapolate,
+  scrollTo,
 } from 'react-native-reanimated';
+import {Events} from 'react-native-head-tab-view-flashlist-support/enum';
 const __IOS = Platform.OS === 'ios';
 
 const createCollapsibleFlatList = (Component: ScrollableView<any>) => {
@@ -603,6 +606,23 @@ const SceneListComponent: React.FC<
       clearLoadingTimeout();
     };
   }, [loadingVisible]);
+
+  useEffect(() => {
+    const event = DeviceEventEmitter.addListener(
+      Events.LIST_SCROLL_TO_TOP,
+      (eventParams) => {
+        zForwardedRef?.current?.scrollToOffset?.({
+          animated: true,
+          offset: 0,
+          ...eventParams,
+        });
+      },
+    );
+
+    return () => {
+      event.remove();
+    };
+  }, []);
 
   const stickyHeaderAnimatedStyles = useAnimatedStyle(() => {
     return {

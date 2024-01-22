@@ -7,7 +7,13 @@ import React, {
   useState,
 } from 'react';
 import {ScrollableView} from 'react-native-head-tab-view-flashlist-support/types';
-import {Platform, StyleSheet, ScrollViewProps, View} from 'react-native';
+import {
+  Platform,
+  StyleSheet,
+  ScrollViewProps,
+  View,
+  DeviceEventEmitter,
+} from 'react-native';
 import RefreshControlContainer from 'react-native-head-tab-view-flashlist-support/RefreshControlContainer';
 import {
   NativeViewGestureHandler,
@@ -41,6 +47,7 @@ import Animated, {
   interpolate,
   Extrapolate,
 } from 'react-native-reanimated';
+import {Events} from 'react-native-head-tab-view-flashlist-support/enum';
 const __IOS = Platform.OS === 'ios';
 
 const createCollapsibleFlashList = (Component: ScrollableView<any>) => {
@@ -637,6 +644,23 @@ const SceneListComponent: React.FC<
       </View>
     );
   };
+
+  useEffect(() => {
+    const event = DeviceEventEmitter.addListener(
+      Events.LIST_SCROLL_TO_TOP,
+      (eventParams) => {
+        zForwardedRef?.current?.scrollToOffset?.({
+          animated: true,
+          offset: 0,
+          ...eventParams,
+        });
+      },
+    );
+
+    return () => {
+      event.remove();
+    };
+  }, []);
 
   // Todo: Improve after
   const tempHeight = useMemo(() => {

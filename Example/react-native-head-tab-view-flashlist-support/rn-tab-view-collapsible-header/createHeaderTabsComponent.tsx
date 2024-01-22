@@ -1,11 +1,12 @@
 import {TabView, TabViewProps, Route, TabBar} from 'react-native-tab-view';
-import React, {useEffect, useRef} from 'react';
+import React, {forwardRef, useEffect, useImperativeHandle, useRef} from 'react';
 import {
   GestureContainer,
   CollapsibleHeaderProps,
   GestureContainerRef,
 } from 'react-native-head-tab-view-flashlist-support';
-
+import {DeviceEventEmitter} from 'react-native';
+import {Events} from 'react-native-head-tab-view-flashlist-support/enum';
 type ZTabViewProps<T extends Route> = Partial<TabViewProps<T>> &
   Pick<TabViewProps<T>, 'onIndexChange' | 'navigationState' | 'renderScene'> &
   CollapsibleHeaderProps;
@@ -21,6 +22,13 @@ export default function createHeaderTabsComponent<T extends Route>(
   React.PropsWithoutRef<ZTabViewProps<T>> & React.RefAttributes<TabView<T>>
 > {
   return React.forwardRef((props: ZTabViewProps<T>, ref) => {
+    useImperativeHandle(ref, () => {
+      return {
+        scrollToTop: (params) => {
+          DeviceEventEmitter.emit(Events.LIST_SCROLL_TO_TOP, params);
+        },
+      };
+    });
     return (
       <CollapsibleHeaderTabView
         {...props}
