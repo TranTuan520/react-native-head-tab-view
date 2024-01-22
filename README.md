@@ -3,16 +3,6 @@
 A package forked from [zyslife/react-native-head-tab-view](https://github.com/zyslife/react-native-head-tab-view), which supports Shopify's FlashLish and a few little things that I think will help you 😗
 
 ```tsx
-# in .../node_modules/react-native-tab-view-collapsible-header( We will do this for you in the next version):
-
-# replace:
-import { GestureContainer, CollapsibleHeaderProps, GestureContainerRef } from 'react-native-head-tab-view'
-
-# to:
-import { GestureContainer, CollapsibleHeaderProps, GestureContainerRef } from 'react-native-head-tab-view-flashlist-support'
-```
-
-```tsx
 # Past usage:
 import { HPageViewHoc } from 'react-native-head-tab-view'
 const HScrollView = HPageViewHoc(ScrollView)
@@ -43,7 +33,7 @@ If your tabs component is **react-native-scrollable-tab-view**
 import * as React from 'react';
 import { View } from 'react-native';
 import { HScrollView } from 'react-native-head-tab-view'
-import { CollapsibleHeaderTabView } from 'react-native-scrollable-tab-view-collapsible-header'
+import { CollapsibleHeaderTabView } from 'react-native-head-tab-view-flashlist-support/rn-tab-view-collapsible-header'
 export default class ExampleBasic extends React.PureComponent<any> {
     render() {
         return (
