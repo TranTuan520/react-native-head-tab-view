@@ -300,6 +300,9 @@ export const useVerifyProps = ({
   }
   if (contentContainerStyle) {
     const tempStyle = StyleSheet.flatten(contentContainerStyle);
+
+    _contentContainerStyle = tempStyle;
+
     if (
       tempStyle.paddingTop !== undefined ||
       tempStyle.minHeight !== undefined
