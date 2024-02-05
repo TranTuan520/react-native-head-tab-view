@@ -120,6 +120,7 @@ export interface NormalSceneBaseProps extends CommonSceneProps {
   loadingDelayDuration?: number;
   loadingVisible?: boolean;
   LoadingComponent?: any;
+  renderItemWithTapGestureHandler?: boolean;
 }
 
 export interface SceneConfig {}

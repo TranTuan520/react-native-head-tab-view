@@ -18,6 +18,7 @@ import RefreshControlContainer from 'react-native-head-tab-view-flashlist-suppor
 import {
   NativeViewGestureHandler,
   ScrollView,
+  TapGestureHandler,
 } from 'react-native-gesture-handler';
 import {
   NormalSceneProps,
@@ -48,6 +49,7 @@ import Animated, {
   Extrapolate,
 } from 'react-native-reanimated';
 import {Events} from 'react-native-head-tab-view-flashlist-support/enum';
+import RNTapGestureHandler from './RNTapGestureHandler';
 const __IOS = Platform.OS === 'ios';
 
 const createCollapsibleFlashList = (Component: ScrollableView<any>) => {
@@ -586,6 +588,7 @@ interface SceneListComponentProps {
   zForwardedRef: any;
   headerHeight: number;
   expectHeight: number;
+  renderItemWithTapGestureHandler: boolean;
 }
 
 const SceneListComponent: React.FC<
@@ -605,6 +608,7 @@ const SceneListComponent: React.FC<
   floatingButtonHeight,
   tabbarHeight,
   calcHeight,
+  renderItemWithTapGestureHandler = true,
   ...rest
 }) => {
   const {
@@ -626,22 +630,28 @@ const SceneListComponent: React.FC<
 
   const isFirstMount = useRef(true);
 
+  const RenderItemComponent = renderItemWithTapGestureHandler
+    ? RNTapGestureHandler
+    : View;
+
   const renderItem = (props) => {
     return (
-      <View
-        onLayout={(event) => {
-          if (isFirstMount.current) {
-            const height = event.nativeEvent.layout.height;
+      <RenderItemComponent>
+        <View
+          onLayout={(event) => {
+            if (isFirstMount.current) {
+              const height = event.nativeEvent.layout.height;
 
-            if (height) {
-              isFirstMount.current = false;
+              if (height) {
+                isFirstMount.current = false;
 
-              setItemHeight(height);
+                setItemHeight(height);
+              }
             }
-          }
-        }}>
-        {rest.renderItem(props)}
-      </View>
+          }}>
+          {rest.renderItem(props)}
+        </View>
+      </RenderItemComponent>
     );
   };
 
@@ -693,7 +703,7 @@ const SceneListComponent: React.FC<
         scrollEventThrottle={16}
         directionalLockEnabled
         renderItem={renderItem}
-        contentContainerStyle={[_contentContainerStyle]}
+        contentContainerStyle={_contentContainerStyle}
         scrollIndicatorInsets={{
           top: headerHeight,
           ..._scrollIndicatorInsets,

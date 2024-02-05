@@ -17,6 +17,8 @@ import {
 } from 'react-native';
 import RefreshControlContainer from './RefreshControlContainer';
 import {NativeViewGestureHandler} from 'react-native-gesture-handler';
+import RNTapGestureHandler from './RNTapGestureHandler';
+
 import {NormalSceneProps, HPageViewProps} from './types';
 import {
   useSceneContext,
@@ -547,6 +549,7 @@ interface SceneListComponentProps {
   loadingDelayDuration: number;
   loadingVisible: boolean;
   LoadingComponent: any;
+  renderItemWithTapGestureHandler: boolean;
 }
 
 const SceneListComponent: React.FC<
@@ -570,6 +573,7 @@ const SceneListComponent: React.FC<
   LoadingComponent,
   data,
   loadingDelayDuration,
+  renderItemWithTapGestureHandler = true,
   ...rest
 }) => {
   const {
@@ -663,6 +667,18 @@ const SceneListComponent: React.FC<
 
   const listData = useMemo(() => (isLoading ? [] : data), [data, isLoading]);
 
+  const RenderItemComponent = renderItemWithTapGestureHandler
+    ? RNTapGestureHandler
+    : View;
+
+  const renderItem = (props) => {
+    return (
+      <RenderItemComponent>
+        <View>{rest.renderItem(props)}</View>
+      </RenderItemComponent>
+    );
+  };
+
   return (
     <NativeViewGestureHandler ref={panRef}>
       <ContainerView
@@ -696,6 +712,7 @@ const SceneListComponent: React.FC<
             </>
           );
         }}
+        renderItem={renderItem}
         {...(isLoading && LoadingComponent
           ? {ListEmptyComponent: LoadingComponent}
           : {})}

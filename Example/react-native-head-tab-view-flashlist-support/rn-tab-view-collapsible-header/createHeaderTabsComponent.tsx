@@ -6,7 +6,10 @@ import {
   GestureContainerRef,
 } from 'react-native-head-tab-view-flashlist-support';
 import {DeviceEventEmitter} from 'react-native';
-import {Events} from 'react-native-head-tab-view-flashlist-support/enum';
+import {
+  Events,
+  IgnoreScrollEnableType,
+} from 'react-native-head-tab-view-flashlist-support/enum';
 type ZTabViewProps<T extends Route> = Partial<TabViewProps<T>> &
   Pick<TabViewProps<T>, 'onIndexChange' | 'navigationState' | 'renderScene'> &
   CollapsibleHeaderProps;
@@ -56,15 +59,37 @@ function CollapsibleHeaderTabView<T extends Route>(
     return <TabBar {...tabbarProps} />;
   };
 
+  const emitIgnoreScrollEnableEvent = (eventType: String) => {
+    DeviceEventEmitter.emit(Events.IGNORE_SCROLL_ENABLE, {type: eventType});
+  };
+
   const renderTabView = (e: {renderTabBarContainer: any}) => {
     const {Component} = props;
     return (
       <Component
         ref={props.forwardedRef}
         {...props}
-        renderTabBar={(tabbarProps) =>
-          e.renderTabBarContainer(_renderTabBar(tabbarProps))
-        }
+        renderTabBar={(tabbarProps) => {
+          return e.renderTabBarContainer(
+            _renderTabBar({
+              ...tabbarProps,
+              onTabPress: () => {
+                tabbarProps?.onTabPress?.();
+                emitIgnoreScrollEnableEvent(
+                  IgnoreScrollEnableType.ON_TAB_PRESSED,
+                );
+              },
+            }),
+          );
+        }}
+        onSwipeStart={() => {
+          props?.onSwipeStart?.();
+          emitIgnoreScrollEnableEvent(IgnoreScrollEnableType.ON_SWIPE_START);
+        }}
+        onSwipeEnd={() => {
+          props?.onSwipeEnd?.();
+          emitIgnoreScrollEnableEvent(IgnoreScrollEnableType.ON_SWIPE_END);
+        }}
       />
     );
   };

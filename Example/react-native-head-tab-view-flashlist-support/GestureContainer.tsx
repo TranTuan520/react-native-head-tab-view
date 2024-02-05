@@ -5,13 +5,14 @@ import React, {
   useMemo,
   useImperativeHandle,
   ReactElement,
+  useRef,
 } from 'react';
 import {
   StyleSheet,
   LayoutChangeEvent,
   Platform,
   View,
-  Dimensions,
+  DeviceEventEmitter,
 } from 'react-native';
 import {
   TapGestureHandler,
@@ -44,6 +45,10 @@ import Animated, {
   runOnJS,
   Extrapolation,
 } from 'react-native-reanimated';
+import {
+  Events,
+  IgnoreScrollEnableType,
+} from 'react-native-head-tab-view-flashlist-support/enum';
 const __IOS = Platform.OS === 'ios';
 
 const GestureContainer: React.ForwardRefRenderFunction<
@@ -102,6 +107,12 @@ const GestureContainer: React.ForwardRefRenderFunction<
   const dragIndex = useSharedValue(curIndexValue.value);
 
   const [floatingButtonHeight, setFloatingButtonHeight] = React.useState(0);
+
+  const [isScrollEnable, setIsScrollEnable] = useState(scrollEnabled);
+
+  const cacheIsScrollEnable = useRef<Boolean>();
+
+  const timeoutIgnoredScrollEnable = useRef<any>();
 
   //scene
   const {
@@ -435,6 +446,11 @@ const GestureContainer: React.ForwardRefRenderFunction<
     },
   });
 
+  const clearTimeoutIgnoredScrollEnable = () => {
+    clearTimeout(timeoutIgnoredScrollEnable.current);
+    timeoutIgnoredScrollEnable.current = undefined;
+  };
+
   useEffect(() => {
     if (headerHeight !== 0) {
       opacityValue.value = withTiming(1);
@@ -448,6 +464,51 @@ const GestureContainer: React.ForwardRefRenderFunction<
   useEffect(() => {
     makeScrollTrans && makeScrollTrans(shareAnimatedValue);
   }, [shareAnimatedValue]);
+
+  useEffect(() => {
+    setIsScrollEnable(scrollEnabled);
+    cacheIsScrollEnable.current = scrollEnabled;
+  }, [scrollEnabled]);
+
+  useEffect(() => {
+    const event = DeviceEventEmitter.addListener(
+      Events.IGNORE_SCROLL_ENABLE,
+      (props: {type: String}) => {
+        const {type} = props ?? {};
+
+        switch (type) {
+          case IgnoreScrollEnableType.ON_TAB_PRESSED:
+            if (cacheIsScrollEnable.current) {
+              setIsScrollEnable(() => false);
+              clearTimeoutIgnoredScrollEnable();
+
+              // @ts-ignore
+              timeoutIgnoredScrollEnable.current = setTimeout(() => {
+                setIsScrollEnable(() => true);
+              }, 200);
+            }
+            break;
+
+          case IgnoreScrollEnableType.ON_SWIPE_START:
+            if (cacheIsScrollEnable.current) {
+              setIsScrollEnable(() => false);
+              clearTimeoutIgnoredScrollEnable();
+
+              // @ts-ignore
+              timeoutIgnoredScrollEnable.current = setTimeout(() => {
+                setIsScrollEnable(() => true);
+              }, 200);
+            }
+            break;
+        }
+      },
+    );
+
+    return () => {
+      event.remove();
+      clearTimeoutIgnoredScrollEnable();
+    };
+  }, []);
 
   //render Refresh component
   const renderRefreshControl = () => {
@@ -651,7 +712,7 @@ const GestureContainer: React.ForwardRefRenderFunction<
         shouldCancelWhenOutside={false}
         onGestureEvent={gestureHandlerHeader}
         activeOffsetY={[-10, 10]}
-        enabled={scrollEnabled !== false}>
+        enabled={isScrollEnable !== false}>
         <Animated.View style={styles.container}>
           <View onLayout={headerOnLayout}>
             {React.isValidElement(renderScrollHeader)
@@ -746,7 +807,7 @@ const GestureContainer: React.ForwardRefRenderFunction<
         onGestureEvent={gestureHandler}
         activeOffsetY={[-10, 10]}
         activeOffsetX={[-500, 500]}
-        enabled={scrollEnabled}>
+        enabled={isScrollEnable}>
         <Animated.View style={[styles.container, opacityStyle]}>
           <Animated.View
             style={[styles.container, animateStyle]}

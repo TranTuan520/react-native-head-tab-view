@@ -1,6 +1,6 @@
 {
   "name": "react-native-head-tab-view-flashlist-support",
-  "version": "1.0.10",
+  "version": "1.0.12",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -28,7 +28,7 @@
     "FlashList"
   ],
   "peerDependencies": {
-    "react-native-gesture-handler": "^1.6.1",
+    "react-native-gesture-handler": "^2.9.0",
     "react-native-reanimated": "^2.0.1"
   },
   "description": "Tab view component for React Native FlashList support!"
