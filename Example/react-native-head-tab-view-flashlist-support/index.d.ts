@@ -6,6 +6,7 @@ import {
   ScrollViewProps,
   FlatListProps,
   SectionListProps,
+  ViewStyle,
 } from 'react-native';
 import {default as Reanimated2} from 'react-native-reanimated';
 export interface CollapsibleHeaderProps {
@@ -85,6 +86,10 @@ export interface CollapsibleHeaderProps {
    * it defaults to 50ms.
    */
   scrollingCheckDuration?: number;
+
+  tabContentStyles?: ViewStyle;
+
+  FloatingButtonComponent: React.ReactElement;
 }
 
 export interface CommonSceneProps {

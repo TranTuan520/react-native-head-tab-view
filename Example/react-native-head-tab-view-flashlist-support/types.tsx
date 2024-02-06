@@ -1,5 +1,10 @@
 import React, {ComponentClass} from 'react';
-import {FlatListProps, SectionListProps, ScrollViewProps} from 'react-native';
+import {
+  FlatListProps,
+  SectionListProps,
+  ScrollViewProps,
+  ViewStyle,
+} from 'react-native';
 import {default as Reanimated2} from 'react-native-reanimated';
 export interface CollapsibleHeaderProps {
   headerHeight?: number;
@@ -41,8 +46,9 @@ export interface IGestureContainerProps extends CollapsibleHeaderProps {
   initialPage: number;
   renderTabView: any;
   forwardedRef: any;
-  renderFooterComponent: any;
-  FloatingButtonComponent: any;
+  renderFooterComponent: React.ReactElement;
+  FloatingButtonComponent: React.ReactElement;
+  tabContentStyles: ViewStyle;
 }
 
 export interface RefreshControlProps {
@@ -58,9 +64,8 @@ export interface NormalSceneProps
   forwardedRef: any;
   loadingDelayDuration: number;
   loadingVisible: boolean;
-  LoadingComponent: any;
-  StickyHeaderComponent: any;
-  FloatingButtonComponent: any;
+  LoadingComponent: React.ReactElement;
+  StickyHeaderComponent: React.ReactElement;
 }
 
 export interface HPageViewProps {

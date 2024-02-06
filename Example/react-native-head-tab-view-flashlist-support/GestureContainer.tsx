@@ -74,6 +74,7 @@ const GestureContainer: React.ForwardRefRenderFunction<
     renderTabView,
     renderRefreshControl: _renderRefreshControl,
     FloatingButtonComponent,
+    tabContentStyles = {},
   },
   forwardedRef,
 ) => {
@@ -777,6 +778,21 @@ const GestureContainer: React.ForwardRefRenderFunction<
     };
   });
 
+  const tabContentAnimatedStyles = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateY: interpolate(
+            shareAnimatedValue.value,
+            [0, headerHeight],
+            [headerHeight, 0],
+            Extrapolation.CLAMP,
+          ),
+        },
+      ],
+    };
+  });
+
   const contentContainer = (
     <HeaderContext.Provider
       value={{
@@ -809,6 +825,17 @@ const GestureContainer: React.ForwardRefRenderFunction<
         activeOffsetX={[-500, 500]}
         enabled={isScrollEnable}>
         <Animated.View style={[styles.container, opacityStyle]}>
+          <Animated.View
+            style={[
+              {
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+              },
+              tabContentAnimatedStyles,
+              tabContentStyles,
+            ]}
+          />
           <Animated.View
             style={[styles.container, animateStyle]}
             onLayout={containerOnLayout}>
