@@ -87,9 +87,14 @@ export interface CollapsibleHeaderProps {
    */
   scrollingCheckDuration?: number;
 
-  tabContentStyles?: ViewStyle;
+  tabContentBackgroundColor?: string;
 
   FloatingButtonComponent: React.ReactElement;
+
+  componentId?: String;
+  /**
+   * required if use scrollToTop function
+   */
 }
 
 export interface CommonSceneProps {

@@ -3,118 +3,120 @@
 A package forked from [zyslife/react-native-head-tab-view](https://github.com/zyslife/react-native-head-tab-view), which supports Shopify's FlashLish and a few little things that I think will help you 😗
 
 ```tsx
-# Past usage:
-import { HPageViewHoc } from 'react-native-head-tab-view'
-const HScrollView = HPageViewHoc(ScrollView)
-const HFlatList = HPageViewHoc(FlatList)
-const HSectionList = HPageViewHoc(SectionList)
-...
-# Current usageimport { HScrollView,HFlatList,HSectionList, HFlashList } from 'react-native-head-tab-view-flashlist-support'
+import {
+  HScrollView,
+  HFlatList,
+  HSectionList,
+  HFlashList,
+} from 'react-native-head-tab-view-flashlist-support';
 ```
 
-
-
 **The following components are currently supported:**  
-[react-native-scrollable-tab-view](https://github.com/ptomasroos/react-native-scrollable-tab-view)  
-[react-native-tab-view](https://github.com/satya164/react-native-tab-view)   
+[react-native-scrollable-tab-view](https://github.com/ptomasroos/react-native-scrollable-tab-view)
 
-For detailed usage, please refer to [Example](https://github.com/zyslife/react-native-head-tab-view#Example) and [Installation](https://github.com/zyslife/react-native-head-tab-view#Installation).
+[react-native-head-tab-view](https://github.com/zyslife/react-native-head-tab-view)
 
+[react-native-tab-view](https://github.com/satya164/react-native-tab-view)
 
 ## Demo
 
-![demo_ios.gif](https://github.com/zyslife/react-native-head-tab-view/blob/master/demoGIF/demo_ios.gif) 
+![demo_ios.gif](https://github.com/zyslife/react-native-head-tab-view/blob/master/demoGIF/demo_ios.gif)
 
-## Example   
+## Example
 
-If your tabs component is **react-native-scrollable-tab-view**  
+If your tabs component is **react-native-scrollable-tab-view**
 
 ```js
 import * as React from 'react';
-import { View } from 'react-native';
-import { HScrollView } from 'react-native-head-tab-view'
-import { CollapsibleHeaderTabView } from 'react-native-head-tab-view-flashlist-support/rn-tab-view-collapsible-header'
+import {View} from 'react-native';
+import {HScrollView} from 'react-native-head-tab-view-flashlist-support';
+import {CollapsibleHeaderTabView} from 'react-native-head-tab-view-flashlist-support/rn-tab-view-collapsible-header';
 export default class ExampleBasic extends React.PureComponent<any> {
-    render() {
-        return (
-            <CollapsibleHeaderTabView renderScrollHeader={() => <View style={{ height: 200, backgroundColor: 'red' }} />}>
-                <HScrollView index={0}>
-                    <View style={{ height: 1000, backgroundColor: '#ff4081' }} />
-                </HScrollView>
-                <HScrollView index={1}>
-                    <View style={{ height: 1000, backgroundColor: '#673ab7' }} />
-                </HScrollView>
-            </CollapsibleHeaderTabView>
-        )
-    }
+  render() {
+    return (
+      <CollapsibleHeaderTabView
+        renderScrollHeader={() => (
+          <View style={{height: 200, backgroundColor: 'red'}} />
+        )}>
+        <HScrollView index={0}>
+          <View style={{height: 1000, backgroundColor: '#ff4081'}} />
+        </HScrollView>
+        <HScrollView index={1}>
+          <View style={{height: 1000, backgroundColor: '#673ab7'}} />
+        </HScrollView>
+      </CollapsibleHeaderTabView>
+    );
+  }
 }
 ```
 
-If your tabs component is **react-native-tab-view**  
+If your tabs component is **react-native-tab-view**
 
 ```js
 import * as React from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
-import { SceneMap } from 'react-native-tab-view';
-import { HScrollView } from 'react-native-head-tab-view'
-import { CollapsibleHeaderTabView } from 'react-native-tab-view-collapsible-header'
+import {View, StyleSheet, Dimensions} from 'react-native';
+import {SceneMap} from 'react-native-tab-view';
+import {HScrollView} from 'react-native-head-tab-view-flashlist-support';
+import {CollapsibleHeaderTabView} from 'react-native-head-tab-view-flashlist-support/rn-tab-view-collapsible-header';
 
 const FirstRoute = () => (
-    <HScrollView index={0}>
-        <View style={[styles.scene, { backgroundColor: '#ff4081' }]} />
-    </HScrollView>
+  <HScrollView index={0}>
+    <View style={[styles.scene, {backgroundColor: '#ff4081'}]} />
+  </HScrollView>
 );
 
 const SecondRoute = () => (
-    <HScrollView index={1}>
-        <View style={[styles.scene, { backgroundColor: '#673ab7' }]} />
-    </HScrollView>
+  <HScrollView index={1}>
+    <View style={[styles.scene, {backgroundColor: '#673ab7'}]} />
+  </HScrollView>
 );
 
-const initialLayout = { width: Dimensions.get('window').width };
+const initialLayout = {width: Dimensions.get('window').width};
 
 export default function TabViewExample() {
-    const [index, setIndex] = React.useState(0);
-    const [routes] = React.useState([
-        { key: 'first', title: 'First' },
-        { key: 'second', title: 'Second' },
-    ]);
+  const [index, setIndex] = React.useState(0);
+  const [routes] = React.useState([
+    {key: 'first', title: 'First'},
+    {key: 'second', title: 'Second'},
+  ]);
 
-    const renderScene = SceneMap({
-        first: FirstRoute,
-        second: SecondRoute,
-    });
+  const renderScene = SceneMap({
+    first: FirstRoute,
+    second: SecondRoute,
+  });
 
-    return (
-        <CollapsibleHeaderTabView
-            renderScrollHeader={() => <View style={{ height: 200, backgroundColor: 'red' }} />}
-            navigationState={{ index, routes }}
-            renderScene={renderScene}
-            onIndexChange={setIndex}
-            initialLayout={initialLayout}
-        />
-    );
+  return (
+    <CollapsibleHeaderTabView
+      renderScrollHeader={() => (
+        <View style={{height: 200, backgroundColor: 'red'}} />
+      )}
+      navigationState={{index, routes}}
+      renderScene={renderScene}
+      onIndexChange={setIndex}
+      initialLayout={initialLayout}
+    />
+  );
 }
 
 const styles = StyleSheet.create({
-    scene: {
-        flex: 1,
-    },
+  scene: {
+    flex: 1,
+  },
 });
 ```
 
-More examples：[Example](https://github.com/zyslife/react-native-head-tab-view/blob/master/Example/src)  
+More examples：[Example](https://github.com/zyslife/react-native-head-tab-view/blob/master/Example/src)
 
-## Run the example  
+## Run the example
 
 ```sh
 cd Example
 yarn or npm install
 
-//run Android 
+//run Android
 react-native run-android
 
-//run iOS 
+//run iOS
 cd ios
 pod install
 cd ../
@@ -126,200 +128,161 @@ react-native run-ios
 - The first step is to add the base library and its dependencies
 
 ```sh
-yarn add react-native-head-tab-view react-native-gesture-handler react-native-reanimated  
-or  
+yarn add react-native-head-tab-view react-native-gesture-handler react-native-reanimated
+or
 npm install react-native-head-tab-view react-native-gesture-handler react-native-reanimated --save
 ```
 
-- The second step is to select the extension library based on the tabs component you are using  
-
-##### If your tabs component is react-native-scrollable-tab-view  
-
-```
-yarn add react-native-scrollable-tab-view-collapsible-header
-```
-
-##### If your tabs component is react-native-tab-view  
+##### If your tabs component is react-native-tab-view
 
 ```
 yarn add react-native-tab-view-collapsible-header
 ```
 
-## Version
+## Linking
 
-| react-native-head-tab-view | react-native-scrollable-tab-view-collapsible-header | react-native-tab-view-collapsible-header |
-| :------------------------: | :-------------------------------------------------: | :--------------------------------------: |
-|          v1 ~ v2           |                          -                          |                    -                     |
-|             v3             |                         v0                          |                    v0                    |
-|          v4-rc.1           |                         v1                          |                    v1                    |
-|          v4-rc.2~          |                         v2                          |                    v2                    |
-
-## Linking    
-
-1. react-native-gesture-handler [Refer to the official documentation](https://github.com/software-mansion/react-native-gesture-handler)  
+1. react-native-gesture-handler [Refer to the official documentation](https://github.com/software-mansion/react-native-gesture-handler)
 2. react-native-reanimated [Refer to the official documentation](https://github.com/software-mansion/react-native-reanimated)
-
 
 ---
 
 ## Documentation
 
-<details>
-<summary>CollapsibleHeaderTabView</summary>  
+#### CollapsibleHeaderProps
 
+##### `renderScrollHeader` _(React.ComponentType<any> | React.ReactElement | null)_ (require)
 
-
-
-
-
-
-
-- If your tabs component is react-native-scrollable-tab-view  
-
->You need to add [this dependency library](https://github.com/zyslife/react-native-scrollable-tab-view-collapsible-header)
->
->```js  
->import { CollapsibleHeaderTabView } from 'react-native-scrollable-tab-view-collapsible-header' 
->```
-
-- If your tabs component is react-native-tab-view 
-
-> You need to add [this dependency library](https://github.com/zyslife/react-native-tab-view-collapsible-header)
->
-> ```javascript
-> import { CollapsibleHeaderTabView } from 'react-native-tab-view-collapsible-header' 
-> ```
-
-`CollapsibleHeaderTabView` extends the props for the tabs component by adding the **CollapsibleHeaderProps**
-
-#### CollapsibleHeaderProps  
-
-##### `renderScrollHeader` _(React.ComponentType<any> | React.ReactElement | null)_  (require)
-
-*render the collapsible header*
+_render the collapsible header_
 
 ```js
 renderScrollHeader={()=><View style={{height:180,backgroundColor:'red'}}/>}
 ```
 
+##### `headerHeight` (optional)
 
-##### `headerHeight`  (optional)
+The height of collapsible header.
 
-The height of collapsible header.  
+##### `tabbarHeight` (optional)
 
+The height of collapsible tabbar
 
-##### `tabbarHeight`  (optional)
+##### `frozeTop`
 
-The height of collapsible tabbar  
+The height at which the top area of the Tabview is frozen
 
-##### `frozeTop`  
+##### `overflowHeight`
 
-The height at which the top area of the Tabview is frozen    
+Sets the upward offset distance of the TabView and TabBar
 
+##### `makeScrollTrans` _(scrollValue: Animated.ShareValue<boolean>) => void_
 
-##### `overflowHeight`  
+Gets the animation value of the shared collapsible header.
 
-Sets the upward offset distance of the TabView and TabBar  
-
-##### `makeScrollTrans`  _(scrollValue: Animated.ShareValue<boolean>) => void_   
-
-Gets the animation value of the shared collapsible header.   
-
-```js 
+```js
 <CollapsibleHeaderTabView
-    makeScrollTrans={(scrollValue) => {
-        this.setState({ scrollValue })
-    }}
+  makeScrollTrans={(scrollValue) => {
+    this.setState({scrollValue});
+  }}
 />
 ```
 
-##### `onStartRefresh`  _(() => void)_   
+##### `onStartRefresh` _(() => void)_
 
 If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality.  
 Make sure to also set the isRefreshing prop correctly.
 
-##### `isRefreshing`  _(boolean)_   
+##### `isRefreshing` _(boolean)_
 
-Whether the TabView is refreshing  
+Whether the TabView is refreshing
 
-##### `renderRefreshControl`  _(() => React.ReactElement)_   
+##### `renderRefreshControl` _(() => React.ReactElement)_
 
 A custom RefreshControl
 
 ##### `scrollEnabled` _(boolean)_
 
-Whether to allow the scene to slide vertically  
+Whether to allow the scene to slide vertically
 
-##### `refreshHeight`  _(number)_   
+##### `refreshHeight` _(number)_
 
 If this height is reached, a refresh event will be triggered （onStartRefresh）  
  it defaults to 80
 
-##### `overflowPull`  _(number)_   
+##### `overflowPull` _(number)_
 
 It's the distance beyond the refreshHeight, the distance to continue the displacement, when the pull is long enough,  
 it defaults to 50.
 
-##### `pullExtendedCoefficient`  _(number)_   
+##### `pullExtendedCoefficient` _(number)_
 
 When the maximum drop-down distance is reached(refreshHeight+overflowPull), the refreshControl moves the distance for each pixel the finger moves The recommended number is between 0 and 1.
 
----
+#### `FloatingButtonComponent` _(React.Element)_
 
+Floating button will show when scroll down
+
+#### `componentId` _(String)_
+
+TabView's id, required if you want to use `scrollToTop()` function
+
+#### `tabContentBackgroundColor` _(String)_
+
+Background color of tabView's content
+
+---
 
 </details>
 
-
 <details>
-<summary>HScrollView \ HFlatList \ HSectionList</summary>  
+<summary>HScrollView \ HFlatList \ HSectionList \ HFlashlist</summary>
 
-
-
-
-
-
-##### `index`  _(number)_   (require)  
+##### `index` _(number)_ (require)
 
 The number of the screen.  
-If you use **react-native-scrollable-tab-view**, it should correspond to the number of the `children` element in the TabView.  
+If you use **react-native-scrollable-tab-view**, it should correspond to the number of the `children` element in the TabView.
 
 If you use **react-native-tab-view**, it should correspond to the index of the `navigationState` of the TabView  
 Please check the [Example](https://github.com/zyslife/react-native-head-tab-view#Example) .
 
-
-##### `onStartRefresh`  _(() => void)_   
+##### `onStartRefresh` _(() => void)_
 
 If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality.  
-Make sure to also set the isRefreshing prop correctly.  
+Make sure to also set the isRefreshing prop correctly.
 
-##### `isRefreshing`  _(boolean)_   
+##### `isRefreshing` _(boolean)_
 
-Whether the scene is refreshing  
+Whether the scene is refreshing
 
-##### `renderRefreshControl`  _(() => React.ComponentType<any> | React.ReactElement | null)_   
+##### `renderRefreshControl` _(() => React.ComponentType<any> | React.ReactElement | null)_
 
 A custom RefreshControl for scene
 
-##### `renderLoadingView` _((headerHeight: number) => React.ReactElement)_  
+##### `renderLoadingView` _((headerHeight: number) => React.ReactElement)_
 
 You can provide a LoadingView when the scene is transparent until the height of the onContentSizeRange callback is less than minHeight.
 
-##### `enableSnap` _(boolean)_ 
+##### `enableSnap` _(boolean)_
 
 When it stops sliding, it automatically switches to the folded and expanded states.
 
+##### `StickyHeaderComponent` _(React.Element)_
 
+Sticky component located below the tabBar
+
+#### `LoadingComponent` _(React.Element)_
+
+Loading view, along with `loadingVisible` props (required)
+
+#### `loadingVisible` _(boolean)_
 
 </details>
 
 ## Tips.
 
-1. If you are not planning to upgrade to RN0.62 in the near future, you can use the v3 version.
-2. You may encounter problems with `React-Native-Reanimated2.0` when you first start using V4.
+1. With HFlashlist, some props like( maintainVisibleContentPosition, paddings props of contentContainerStyle, ...) is not working
+2. When changing tabView's routes right in a screen or component, you should adding `animationEnabled={false}` to tabView props, otherwise there will be some bugs about ui, gestures,...( react-native-tab-view issue)
 
 > [Refer to the official documentation](https://github.com/software-mansion/react-native-reanimated).
 > I'm sure it won't be difficult for you
 
-
-
-*Thank you for your effort.*
+_Thank you for your effort._

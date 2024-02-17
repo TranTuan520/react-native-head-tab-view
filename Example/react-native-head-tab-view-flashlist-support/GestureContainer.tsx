@@ -74,7 +74,8 @@ const GestureContainer: React.ForwardRefRenderFunction<
     renderTabView,
     renderRefreshControl: _renderRefreshControl,
     FloatingButtonComponent,
-    tabContentStyles = {},
+    tabContentBackgroundColor = 'transparent',
+    componentId = '',
   },
   forwardedRef,
 ) => {
@@ -815,6 +816,7 @@ const GestureContainer: React.ForwardRefRenderFunction<
         scrollingCheckDuration,
         isSlidingHeader,
         floatingButtonHeight,
+        componentId,
       }}>
       <PanGestureHandler
         ref={shipRef}
@@ -831,9 +833,9 @@ const GestureContainer: React.ForwardRefRenderFunction<
                 position: 'absolute',
                 width: '100%',
                 height: '100%',
+                backgroundColor: tabContentBackgroundColor,
               },
               tabContentAnimatedStyles,
-              tabContentStyles,
             ]}
           />
           <Animated.View

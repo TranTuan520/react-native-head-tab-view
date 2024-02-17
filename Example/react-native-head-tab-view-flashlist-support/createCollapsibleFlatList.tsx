@@ -95,6 +95,7 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
     refHasChanged,
     updateSceneInfo,
     floatingButtonHeight,
+    componentId,
   } = useSceneContext();
   const _scrollView = useSharedScrollableRef<ScrollView>(forwardedRef);
   const panRef = useRef();
@@ -530,6 +531,7 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
             tabbarHeight={tabbarHeight}
             StickyHeaderComponent={StickyHeaderComponent}
             floatingButtonHeight={floatingButtonHeight}
+            componentId={componentId}
             {...restProps}
           />
         </Animated.View>
@@ -574,6 +576,7 @@ const SceneListComponent: React.FC<
   data,
   loadingDelayDuration,
   renderItemWithTapGestureHandler = true,
+  componentId,
   ...rest
 }) => {
   const {
@@ -615,11 +618,13 @@ const SceneListComponent: React.FC<
     const event = DeviceEventEmitter.addListener(
       Events.LIST_SCROLL_TO_TOP,
       (eventParams) => {
-        zForwardedRef?.current?.scrollToOffset?.({
-          animated: true,
-          offset: 0,
-          ...eventParams,
-        });
+        if (eventParams?.componentId === componentId) {
+          zForwardedRef?.current?.scrollToOffset?.({
+            animated: true,
+            offset: 0,
+            ...eventParams,
+          });
+        }
       },
     );
 

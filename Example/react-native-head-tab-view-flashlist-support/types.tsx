@@ -48,7 +48,8 @@ export interface IGestureContainerProps extends CollapsibleHeaderProps {
   forwardedRef: any;
   renderFooterComponent: React.ReactElement;
   FloatingButtonComponent: React.ReactElement;
-  tabContentStyles: ViewStyle;
+  tabContentBackgroundColor: string;
+  componentId?: string;
 }
 
 export interface RefreshControlProps {
@@ -99,6 +100,7 @@ export interface IHeaderContext {
   enableSnap: boolean;
   scrollingCheckDuration: number;
   floatingButtonHeight: number;
+  componentId?: string;
 }
 
 export type updateSceneInfoType = {

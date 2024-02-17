@@ -92,6 +92,7 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
     refHasChanged,
     updateSceneInfo,
     floatingButtonHeight,
+    componentId,
   } = useSceneContext();
   const _scrollView = useSharedScrollableRef<ScrollView>(forwardedRef);
   const panRef = useRef();
@@ -527,6 +528,7 @@ const SceneComponent: React.FC<NormalSceneProps & HPageViewProps> = ({
             realY={realY}
             calcHeight={calcHeight}
             tabbarHeight={tabbarHeight}
+            componentId={componentId}
             {...restProps}
           />
         </Animated.View>
@@ -561,6 +563,7 @@ const SceneListComponent: React.FC<
   realY,
   calcHeight,
   tabbarHeight,
+  componentId,
   ...rest
 }) => {
   const {
@@ -592,11 +595,13 @@ const SceneListComponent: React.FC<
     const event = DeviceEventEmitter.addListener(
       Events.LIST_SCROLL_TO_TOP,
       (eventParams) => {
-        zForwardedRef?.current?.scrollTo?.({
-          animated: true,
-          y: 0,
-          ...eventParams,
-        });
+        if (eventParams?.componentId === componentId) {
+          zForwardedRef?.current?.scrollTo?.({
+            animated: true,
+            y: 0,
+            ...eventParams,
+          });
+        }
       },
     );
 
