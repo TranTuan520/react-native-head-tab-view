@@ -25,10 +25,15 @@ export default function createHeaderTabsComponent<T extends Route>(
   React.PropsWithoutRef<ZTabViewProps<T>> & React.RefAttributes<TabView<T>>
 > {
   return React.forwardRef((props: ZTabViewProps<T>, ref) => {
+    const {componentId} = props ?? {};
+
     useImperativeHandle(ref, () => {
       return {
         scrollToTop: (params) => {
-          DeviceEventEmitter.emit(Events.LIST_SCROLL_TO_TOP, params);
+          DeviceEventEmitter.emit(Events.LIST_SCROLL_TO_TOP, {
+            componentId,
+            ...params,
+          });
         },
       };
     });
@@ -47,6 +52,8 @@ function CollapsibleHeaderTabView<T extends Route>(
 ): any {
   const mRef = useRef<GestureContainerRef>();
   const initialPageRef = useRef(props.navigationState.index);
+
+  const {animationEnabled} = props ?? {};
 
   useEffect(() => {
     mRef.current && mRef.current.setCurrentIndex(props.navigationState.index);
@@ -75,9 +82,12 @@ function CollapsibleHeaderTabView<T extends Route>(
               ...tabbarProps,
               onTabPress: () => {
                 tabbarProps?.onTabPress?.();
-                emitIgnoreScrollEnableEvent(
-                  IgnoreScrollEnableType.ON_TAB_PRESSED,
-                );
+
+                if (animationEnabled !== false) {
+                  emitIgnoreScrollEnableEvent(
+                    IgnoreScrollEnableType.ON_TAB_PRESSED,
+                  );
+                }
               },
             }),
           );
