@@ -35,6 +35,18 @@ export default function createHeaderTabsComponent<T extends Route>(
             ...params,
           });
         },
+        scrollToTabBar: (params) => {
+          DeviceEventEmitter.emit(Events.LIST_SCROLL_DOWN_TO_TAB_BAR, {
+            componentId,
+            ...params,
+          });
+        },
+        scrollToOffset: (params) => {
+          DeviceEventEmitter.emit(Events.LIST_SCROLL_TO_OFFSET, {
+            componentId,
+            ...params,
+          });
+        },
       };
     });
     return (

@@ -593,6 +593,8 @@ const SceneListComponent: React.FC<
 
   const loadingTimeout = useRef<any>(null);
 
+  const cacheContentHeight = useRef({headerHeight, tabbarHeight});
+
   const clearLoadingTimeout = () => {
     clearTimeout(loadingTimeout.current);
     loadingTimeout.current = null;
@@ -615,7 +617,11 @@ const SceneListComponent: React.FC<
   }, [loadingVisible]);
 
   useEffect(() => {
-    const event = DeviceEventEmitter.addListener(
+    cacheContentHeight.current = {headerHeight, tabbarHeight};
+  }, [headerHeight, tabbarHeight]);
+
+  useEffect(() => {
+    const scrollToTopEvent = DeviceEventEmitter.addListener(
       Events.LIST_SCROLL_TO_TOP,
       (eventParams) => {
         if (eventParams?.componentId === componentId) {
@@ -628,8 +634,38 @@ const SceneListComponent: React.FC<
       },
     );
 
+    const scrollToTabBarEvent = DeviceEventEmitter.addListener(
+      Events.LIST_SCROLL_DOWN_TO_TAB_BAR,
+      (eventParams) => {
+        if (eventParams?.componentId === componentId) {
+          zForwardedRef?.current?.scrollToOffset?.({
+            animated: true,
+            offset:
+              cacheContentHeight.current?.headerHeight +
+                eventParams?.extraOffset ?? 0,
+            ...eventParams,
+          });
+        }
+      },
+    );
+
+    const scrollToOffset = DeviceEventEmitter.addListener(
+      Events.LIST_SCROLL_TO_OFFSET,
+      (eventParams) => {
+        if (eventParams?.componentId === componentId) {
+          zForwardedRef?.current?.scrollToOffset?.({
+            animated: true,
+            offset: eventParams?.offset,
+            ...eventParams,
+          });
+        }
+      },
+    );
+
     return () => {
-      event.remove();
+      scrollToTopEvent.remove();
+      scrollToTabBarEvent.remove();
+      scrollToOffset.remove();
     };
   }, []);
 
