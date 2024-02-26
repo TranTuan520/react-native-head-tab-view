@@ -127,7 +127,7 @@ react-native run-ios
 
 - The first step is to add the base library and its dependencies
 
-```sh
+```
 yarn add react-native-head-tab-view react-native-gesture-handler react-native-reanimated
 or
 npm install react-native-head-tab-view-flashlist-support react-native-gesture-handler react-native-reanimated --save
@@ -222,6 +222,17 @@ TabView's id, required if you want to use `scrollToTop()` function
 #### `tabContentBackgroundColor` _(String)_
 
 Background color of tabView's content
+
+#### API
+
+`scrollToTop()`
+Scroll tabView content to top
+
+`scrollToTabBar({extraOffset: number})`
+Scroll tabView content to tabBar + extraOffset
+
+`scrollToOffset({offset: Number})`
+Scroll tabView content to offset
 
 ---
 
